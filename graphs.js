@@ -1,24 +1,45 @@
 class Graph {
-    constructor() {
-        this.adjacencyList = {};
+    constructor(isDirected = false) {
+        this.isDirected = isDirected;
+        this.adjacencyList = new Map();
     }
 
+    // Add a vertex to the graph
     addVertex(vertex) {
-        if (!this.adjacencyList[vertex]) {
-            this.adjacencyList[vertex] = [];
+        if (!this.adjacencyList.has(vertex)) {
+            this.adjacencyList.set(vertex, []);
         }
+        return this;
     }
 
-    addEdge(vertex1, vertex2) {
-        this.adjacencyList[vertex1].push(vertex2);
-        this.adjacencyList[vertex2].push(vertex1);
+    // Add an edge between two vertices
+    addEdge(source, destination) {
+        // Add vertices if they don't exist
+        this.addVertex(source)
+        this.addVertex(destination)
+
+        // Add edge from source to destination
+        this.adjacencyList.get(source).push(destination)
+
+        // For undirected graph, add edge from destination to source
+        if (!this.isDirected) {
+            this.adjacencyList.get(destination).push(source)
+        }
+        return this;
     }
 
-    removeEdge(vertex1, vertex2) {
-        this.adjacencyList[vertex1] = this.adjacencyList[vertex1]
-            .filter(v => v !== vertex2);
-        this.adjacencyList[vertex2] = this.adjacencyList[vertex2]
-            .filter(v => v !== vertex1);
+    // Remove an edge between two vertices
+    removeEdge(source, destination) {
+        if (this.adjacencyList.has(source)) {
+            const neighbors = this.adjacencyList.get(source)
+            this.adjacencyList.set(source, neighbors.filter(v => v !== destination))
+        }
+
+        if (!this.isDirected && this.adjacencyList.has(destination)) {
+            const neighbors = this.adjacencyList.get(destination)
+            this.adjacencyList.set(destination, neighbors.filter(v => v !== source))
+        }
+        return this
     }
 
     removeVertex(vertex) {
