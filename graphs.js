@@ -28,6 +28,40 @@ class Graph {
         return this;
     }
 
+    // Find all connected components (for undirected graphs only)
+    findConnectedComponents() {
+        if (this.isDirected) {
+            throw new Error('Connected components are only defined for undirected graphs')
+        }
+
+        const visited = new Set();
+        const components = []
+
+        // DFS helper function to explore a component
+        const dfs = (vertex, currentComponent) => {
+            visited.add(vertex)
+            currentComponent.push(vertex)
+
+            const neighbors = this.adjacencyList.get(vertex)
+            for (const neighbor of neighbors) {
+                if (!visited.has(neighbor)) {
+                    dfs(neighbor, currentComponent)
+                }
+            }
+        }
+
+        // Iterate through all vertices
+        for (const vertex of this.adjacencyList.keys()) {
+            if (!visited.has(vertex)) {
+                const currentComponent = []
+                dfs(vertex, currentComponent)
+                components.push(currentComponent)
+            }
+        }
+
+        return components
+    }
+
     // Check if path exists between start and end vertices
     hasPath(start, end) {
         // If either vertex doesn't exist, no path possible
