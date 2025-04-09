@@ -42,12 +42,47 @@ class Graph {
         return this
     }
 
+    // Remove a vertex and all its edges
     removeVertex(vertex) {
-        while(this.adjacencyList[vertex].length) {
-            const adjacentVertex = this.adjacencyList[vertex].pop();
-            this.removeEdge(vertex, adjacentVertex);
+        if (!this.adjacencyList.has(vertex)) return this;
+
+        // Remove all edges pointing to this vertex
+        for (let [source, neighbors] of this.adjacencyList) {
+            this.adjacencyList.set(source, neighbors.filter(v => v !== vertex))
         }
-        delete this.adjacencyList[vertex];
+
+        // Remove the vertex itself
+        this.adjacencyList.delete(vertex)
+        return this
+    }
+
+    // Get neighbors of a vertex
+    getNeighbors(vertex) {
+        return this.adjacencyList.get(vertex) || []
+    }
+
+    // Get all vertices
+    getVertices() {
+        return Array.from(this.adjacencyList.keys())
+    }
+
+    // Get number of vertices
+    size() {
+        return this.adjacencyList.size
+    }
+
+    // Check if edge exists
+    hasEdge(source, destination) {
+        return this.adjacencyList.has(source) && this.adjacencyList.get(source).includes(destination)
+    }
+    
+    // Print the graph
+    toString() {
+        let result = ''
+        for (let [vertex, neighbors] of this.adjacencyList) {
+            result += `${vertex} -> ${neighbors.join(', ')}\n`
+        }
+        return result
     }
 
     depthFirstTraversal(start) {
@@ -70,24 +105,38 @@ class Graph {
     }
 }
 
-// Create a new graph
-const graph = new Graph();
-console.log('Full graph object without vertices', graph)
+// Example usage:
+function demonstrateGraph() {
+    // Directed graph
+    const directedGraph = new Graph(true);
+    directedGraph
+        .addEdge('A', 'B')
+        .addEdge('B', 'C')
+        .addEdge('A', 'C');
+    console.log('Directed Graph:');
+    console.log(directedGraph.toString());
 
-// Add vertices
-graph.addVertex("A");
-graph.addVertex("B");
-graph.addVertex("C");
-graph.addVertex("D");
-console.log('Full graph object with vertices', graph)
+    // Undirected graph
+    const undirectedGraph = new Graph(false);
+    undirectedGraph
+        .addEdge(1, 2)
+        .addEdge(2, 3)
+        .addEdge(1, 3);
+    console.log('Undirected Graph:');
+    console.log(undirectedGraph.toString());
 
-// Add edges
-graph.addEdge("A", "B");
-graph.addEdge("A", "C");
-graph.addEdge("B", "D");
-graph.addEdge("C", "D");
-console.log('Full graph object with edges', graph)
+    // Test other operations
+    console.log('Neighbors of 2:', undirectedGraph.getNeighbors(2));
+    console.log('Has edge 1->2:', undirectedGraph.hasEdge(1, 2));
+    console.log('Graph size:', undirectedGraph.size());
+    
+    undirectedGraph.removeEdge(1, 2);
+    console.log('After removing edge 1-2:');
+    console.log(undirectedGraph.toString());
+    
+    undirectedGraph.removeVertex(3);
+    console.log('After removing vertex 3:');
+    console.log(undirectedGraph.toString());
+}
 
-// Perform DFS starting from vertex "A"
-console.log(graph.depthFirstTraversal("A")); 
-// Output: ["A", "B", "D", "C"]
+demonstrateGraph();
