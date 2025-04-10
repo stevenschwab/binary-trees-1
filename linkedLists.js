@@ -63,3 +63,21 @@ class LinkedList {
         console.log(elements.join(" -> "))
     }
 }
+
+// Test case 1
+const list = new LinkedList()
+
+// Adding elements
+list.append(5)
+list.append(10)
+list.append(15)
+list.append(20)
+
+// Print the list
+console.log("Linked List:")
+list.print()
+
+// Test linear search
+console.log("\nSearch results:")
+console.log(list.linearSearch(15))  // { found: true, position: 2, value: 15 }
+console.log(list.linearSearch(7));  // { found: false, position: -1, value: null }
