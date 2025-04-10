@@ -54,6 +54,12 @@ class LinkedList {
 
     // Helper method to print the list
     print() {
-
+        let current = this.head
+        const elements = []
+        while (current) {
+            elements.push(current.data)
+            current = current.next
+        }
+        console.log(elements.join(" -> "))
     }
 }
