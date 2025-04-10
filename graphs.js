@@ -28,6 +28,94 @@ class Graph {
         return this;
     }
 
+    // Find cycle
+    findCycle() {
+        const visited = new Set()
+        const recStack = new Set() // Tracks vertices in current recursion stack
+        const parentMap = new Map() // Tracks parent of each vertex in DFS
+
+        // DFS helper function
+        const dfs = (vertex, parent = null) => {
+            visited.add(vertex)
+            recStack.add(vertex)
+            parentMap.set(vertex, parent)
+
+            const neighbors = this.adjacencyList.get(vertex)
+            for (const neighbor of neighbors) {
+                // For undirected graphs, skip the parent to avoid trivial cycles
+                if (!this.isDirected && neighbor === parent) {
+                    continue
+                }
+
+                if (!visited.has(neighbor)) {
+                    const cycle = dfs(neighbor, vertex)
+                    if (cycle.length > 0) {
+                        return cycle
+                    }
+                } else if (recStack.has(neighbor)) {
+                    // Cycle detected, construct the path
+                    const cycle = []
+                    let current = vertex
+                    cycle.push(current)
+
+                    // Trace back until we reach the neighbor
+                    while (current !== neighbor) {
+                        current = parentMap.get(current)
+                        cycle.push(current)
+                    }
+                    cycle.push(vertex)
+                    return cycle
+                }
+            }
+
+            recStack.delete(vertex)
+            return []
+        }
+
+        // Check each vertex in case graph is disconnected
+        for (const vertex of this.adjacencyList.keys()) {
+            if (!visited.has(vertex)) {
+                const cycle = dfs(vertex)
+                if (cycle.length > 0) {
+                    return cycle
+                }
+            }
+        }
+
+        return [] // no cycle found
+    }
+
+    // Cycle detection
+    hasCycle() {
+        const visited = {}
+        const recStack = {}
+
+        for (let vertex in this.adjacencyList) {
+            if (this.hasCycleUtil(vertex, visited, recStack)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    // Cycle helper method
+    hasCycleUtil(vertex, visited, recStack) {
+        if (!visited[vertex]) {
+            visited[vertex] = true
+            recStack[vertex] = true
+
+            for (let neighbor of this.adjacencyList[vertex]) {
+                if (!visited[neighbor] && this.hasCycleUtil(neighbor, visited, recStack)) {
+                    return true;
+                } else if (recStack[neighbor]) {
+                    return true
+                }
+            }
+        }
+        recStack[vertex] = false
+        return false
+    }
+
     // Find all connected components (for undirected graphs only)
     findConnectedComponents() {
         if (this.isDirected) {
@@ -249,4 +337,85 @@ function testHasPath() {
     console.log('Path X to W:', g3.hasPath('X', 'W')) // false
 }
 
-testHasPath()
+// testHasPath()
+
+function testConnectedComponents() {
+    // Test 1: Graph with two components
+    const g1 = new Graph(false);
+    g1.addEdge(1, 2)
+      .addEdge(2, 3)
+      .addEdge(4, 5);
+    console.log('Test 1 - Two components:');
+    console.log(g1.toString());
+    console.log('Components:', g1.findConnectedComponents());
+
+    // Test 2: Single component with cycle
+    const g2 = new Graph(false);
+    g2.addEdge('A', 'B')
+      .addEdge('B', 'C')
+      .addEdge('C', 'A')
+      .addEdge('C', 'D');
+    console.log('\nTest 2 - Single component with cycle:');
+    console.log(g2.toString());
+    console.log('Components:', g2.findConnectedComponents());
+
+    // Test 3: Empty graph and single vertex
+    const g3 = new Graph(false);
+    console.log('\nTest 3 - Empty graph:');
+    console.log('Components:', g3.findConnectedComponents());
+    
+    g3.addVertex('X');
+    console.log('With single vertex:');
+    console.log(g3.toString());
+    console.log('Components:', g3.findConnectedComponents());
+
+    // Test 4: Fully disconnected graph
+    const g4 = new Graph(false);
+    g4.addVertex(1).addVertex(2).addVertex(3);
+    console.log('\nTest 4 - Fully disconnected:');
+    console.log(g4.toString());
+    console.log('Components:', g4.findConnectedComponents());
+}
+
+// Run tests
+// testConnectedComponents();
+
+function testCycleDetection() {
+    // Test 1: Directed graph with cycle
+    const g1 = new Graph(true);
+    g1.addEdge("A", "B")
+      .addEdge("B", "C")
+      .addEdge("C", "A");
+    console.log("Test 1 - Directed with cycle:");
+    console.log(g1.toString());
+    console.log("Cycle:", g1.findCycle());
+
+    // Test 2: Undirected graph with cycle
+    const g2 = new Graph(false);
+    g2.addEdge(1, 2)
+      .addEdge(2, 3)
+      .addEdge(3, 1);
+    console.log("\nTest 2 - Undirected with cycle:");
+    console.log(g2.toString());
+    console.log("Cycle:", g2.findCycle());
+
+    // Test 3: Graph with no cycle
+    const g3 = new Graph(true);
+    g3.addEdge("X", "Y")
+      .addEdge("Y", "Z");
+    console.log("\nTest 3 - No cycle:");
+    console.log(g3.toString());
+    console.log("Cycle:", g3.findCycle());
+
+    // Test 4: Disconnected graph with cycle
+    const g4 = new Graph(false);
+    g4.addEdge("A", "B")
+      .addEdge("B", "C")
+      .addEdge("C", "A")
+      .addVertex("D");
+    console.log("\nTest 4 - Disconnected with cycle:");
+    console.log(g4.toString());
+    console.log("Cycle:", g4.findCycle());
+}
+
+testCycleDetection();
