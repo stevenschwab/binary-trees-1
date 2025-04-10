@@ -27,4 +27,33 @@ class LinkedList {
         }
         this.size++
     }
+
+    // Linear search method to find a value
+    linearSearch(target) {
+        let current = this.head
+        let position = 0
+
+        while (current !== null) {
+            if (current.data === target) {
+                return {
+                    found: true,
+                    position: position,
+                    value: current.data
+                }
+            }
+            current = current.next
+            position++
+        }
+
+        return {
+            found: false,
+            position: -1,
+            value: null
+        }
+    }
+
+    // Helper method to print the list
+    print() {
+
+    }
 }
