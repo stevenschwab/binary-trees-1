@@ -119,19 +119,52 @@ class LinkedList {
 }
 
 // Test case 1
-const list = new LinkedList()
+function demonstrateAppend() {
+    const list = new LinkedList()
 
-// Adding elements
-list.append(5)
-list.append(10)
-list.append(15)
-list.append(20)
+    // Adding elements
+    list.append(5)
+    list.append(10)
+    list.append(15)
+    list.append(20)
+    
+    // Print the list
+    console.log("Linked List:")
+    list.print()
+    
+    // Test linear search
+    console.log("\nSearch results:")
+    console.log(list.linearSearch(15))  // { found: true, position: 2, value: 15 }
+    console.log(list.linearSearch(7));  // { found: false, position: -1, value: null }
+}
 
-// Print the list
-console.log("Linked List:")
-list.print()
+// demonstrateAppend()
 
-// Test linear search
-console.log("\nSearch results:")
-console.log(list.linearSearch(15))  // { found: true, position: 2, value: 15 }
-console.log(list.linearSearch(7));  // { found: false, position: -1, value: null }
+// Test case 2
+function demonstrateInsert() {
+    // Example usage:
+    const list = new LinkedList();
+
+    // Testing insertions
+    console.log("Inserting elements:");
+    list.insertAtEnd(10);        // 10
+    list.insertAtBeginning(5);   // 5 -> 10
+    list.insertAtMiddle(7, 1);   // 5 -> 7 -> 10
+    list.insertAtEnd(15);        // 5 -> 7 -> 10 -> 15
+    list.insertAtMiddle(12, 3);  // 5 -> 7 -> 10 -> 12 -> 15
+
+    // Print the list
+    console.log("\nLinked List:");
+    list.print(); // Output: 5 -> 7 -> 10 -> 12 -> 15
+
+    // Test linear search
+    console.log("\nSearch results:");
+    console.log(list.linearSearch(10)); // { found: true, position: 2, value: 10 }
+    console.log(list.linearSearch(20)); // { found: false, position: -1, value: null }
+
+    // Test invalid position
+    console.log("\nTesting invalid position:");
+    list.insertAtMiddle(25, 10); // Output: Invalid position message
+}
+
+demonstrateInsert()
