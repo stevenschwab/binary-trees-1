@@ -29,9 +29,20 @@ class LinkedList {
         this.size++
     }
 
-    // Delete beginning node
+    // Delete node from beginning
     deleteFromBeginning() {
+        if (!this.head) {
+            console.log("List is empty");
+            return false;
+        }
 
+        const deletedData = this.head.data;
+        this.head = this.head.next;
+        this.size--;
+        return {
+            success: true,
+            deleted: deletedData
+        };
     }
 
     // Delete node by value (first occurence)
