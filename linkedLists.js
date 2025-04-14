@@ -257,6 +257,71 @@ class LinkedList {
         return targetPosition; // Returns -1 if not found, else index from start
     }
 
+    // Bulk insert: insert multiple values at a specified position
+    insertMultipleAtPosition(values, position) {
+        // Validate inputs
+        if (!Array.isArray(values) || values.length === 0) {
+            console.log("Values must be a non-empty array");
+            return false;
+        }
+
+        if (position === null || position === undefined || typeof position !== 'number' || position < 0 || position > this.size) {
+            console.log(`Invalid position. Position should be a number between 0 and ${this.size}`);
+            return false;
+        }
+
+        // Handle special case: inserting at position 0
+        if (position === 0) {
+            let currentHead = this.head;
+            let lastInserted = null;
+
+            // Insert values in order
+            for (let value of values) {
+                const newNode = new Node(value);
+                if (!lastInserted) {
+                    this.head = newNode;
+                } else {
+                    lastInserted.next = newNode;
+                }
+                lastInserted = newNode;
+                this.size++;
+            }
+
+            // Connect to the rest of the list
+            lastInserted.next = currentHead;
+            return true;
+        }
+
+        // General case: inserting at position > 0
+        let current = this.head;
+        let previous = null;
+        let currentPosition = 0;
+
+        // Traverse to the insertion point
+        while (currentPosition < position) {
+            previous = current;
+            current = current.next;
+            currentPosition++;
+        }
+
+        // Insert values in order
+        let lastInserted = null;
+        for (let value of values) {
+            const newNode = new Node(value);
+            if (!lastInserted) {
+                previous.next = newNode;
+            } else {
+                lastInserted.next = newNode;
+            }
+            lastInserted = newNode;
+            this.size++;
+        }
+
+        // Connect to the rest of the list
+        lastInserted.next = current;
+        return true;
+    }
+
     // Helper method to print the list
     print() {
         let current = this.head
