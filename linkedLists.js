@@ -45,6 +45,41 @@ class LinkedList {
         };
     }
 
+    // Delete node from middle (at a specific position)
+    deleteFromMiddle(position) {
+        if (!this.head) {
+            console.log("List is empty");
+            return false;
+        }
+
+        // Check for null, undefined, or invalid position
+        if (position === null || position === undefined || typeof position !== 'number' || position < 0 || position >= this.size) {
+            console.log(`Invalid position. Position should be a number between 0 and ${this.size - 1}`);
+            return false;
+        }
+
+        if (position === 0) {
+            return this.deleteFromBeginning();
+        }
+
+        let current = this.head;
+        let previous = null;
+        let currentPosition = 0;
+
+        while (currentPosition < position) {
+            previous = current;
+            current = current.next;
+            currentPosition++;
+        }
+
+        previous.next = current.next;
+        this.size--;
+        return {
+            success: true,
+            deleted: current.data
+        };
+    }
+
     // Delete node by value (first occurence)
     deleteByValue(value) {
         if (!this.head) {
