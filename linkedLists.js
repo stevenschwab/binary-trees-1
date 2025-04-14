@@ -223,6 +223,40 @@ class LinkedList {
         }
     }
 
+    // Search for a value starting from the end of the list
+    searchFromEnd(target) {
+        if (!this.head) {
+            console.log("List is empty");
+            return false; // Handle empty list
+        }
+
+        // First pass: find the last node and confirm size
+        let current = this.head;
+        let lastNode = null;
+        let nodeCount = 0;
+
+        while (current) {
+            lastNode = current;
+            current = current.next;
+            nodeCount++;
+        }
+
+        // Second pass: search backwards by traversing from head
+        current = this.head;
+        let position = 0;
+        let targetPosition = -1;
+
+        while (current && position < nodeCount) {
+            if (current.data === target) {
+                targetPosition = position; // Store position from start
+            }
+            current = current.next;
+            position++;
+        }
+
+        return targetPosition; // Returns -1 if not found, else index from start
+    }
+
     // Helper method to print the list
     print() {
         let current = this.head
