@@ -29,6 +29,44 @@ class LinkedList {
         this.size++
     }
 
+    // Delete beginning node
+    deleteFromBeginning() {
+
+    }
+
+    // Delete node by value (first occurence)
+    deleteByValue(value) {
+        if (!this.head) {
+            console.log("List is empty");
+            return false
+        }
+
+        if (this.head.data === value) {
+            return this.deleteFromBeginning();
+        }
+
+        let current = this.head;
+        let previous = null;
+
+        while (current && current.data !== value) {
+            previous = current;
+            current = current.next;
+        }
+
+        if (!current) {
+            console.log(`Value ${value} not found in the list`);
+            return false;
+        }
+
+        previous.next = current.next;
+        current.next = null;
+        this.size--;
+        return {
+            success: true,
+            deleted: current.data
+        };
+    }
+
     // Insert node at beginning, middle, or end
     insertAtBeginning(data) {
         const newNode = new Node(data);
