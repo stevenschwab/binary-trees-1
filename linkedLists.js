@@ -80,6 +80,39 @@ class LinkedList {
         };
     }
 
+    // Delete node at end of list
+    deleteFromEnd() {
+        if (!this.head) {
+            console.log("List is empty");
+            return false;
+        }
+
+        if (!this.head.next) {
+            const deletedData = this.head.data;
+            this.head = null;
+            this.size--;
+            return {
+                success: true,
+                deleted: deletedData
+            };
+        }
+
+        let current = this.head;
+        let previous = null;
+
+        while (current.next) {
+            previous = current;
+            current = current.next;
+        }
+
+        previous.next = null;
+        this.size--;
+        return {
+            success: true,
+            deleted: current.data
+        };
+    }
+
     // Delete node by value (first occurence)
     deleteByValue(value) {
         if (!this.head) {
