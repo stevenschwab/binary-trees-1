@@ -322,6 +322,41 @@ class LinkedList {
         return true;
     }
 
+    // Delete all nodes with a specific value
+    deleteAllByValue(value) {
+        if (!this.head) {
+            console.log("List is empty");
+            return false; // Handle empty list
+        }
+
+        let deletedCount = 0;
+        let current = this.head;
+        let previous = null;
+
+        // Handle nodes at the beginning
+        while (current && current.data === value) {
+            this.head = current.next;
+            current = this.head;
+            deletedCount++;
+            this.size--;
+        }
+
+        // Handle nodes in the middle and end
+        while (current) {
+            if (current.data === value) {
+                previous.next = current.next;
+                current = current.next;
+                deletedCount++;
+                this.size--;
+            } else {
+                previous = current;
+                current = current.next;
+            }
+        }
+
+        return deletedCount;
+    }
+
     // Helper method to print the list
     print() {
         let current = this.head
