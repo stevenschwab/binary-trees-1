@@ -139,6 +139,41 @@ class BinaryTree {
             return _checkBST(node.left, min, node.value) && _checkBST(node.right, node.value, max)
         }
     }
+
+    // New method to compute level sums
+    levelSums() {
+        if (!this.root) {
+            return [];
+        }
+
+        const result = [];
+        const queue = [this.root]; // Initialize queue with root
+
+        while (queue.length > 0) {
+            const levelSize = queue.length; // Number of nodes at current level
+            let levelSum = 0;
+
+            // Process all nodes at the current level
+            for (let i = 0; i < levelSize; i++) {
+                const node = queue.shift(); // Dequeue the next node
+                levelSum += node.value; // Add its value to the level sum
+
+                // Enqueue left child if it exists
+                if (node.left) {
+                    queue.push(node.left)
+                }
+                // Enqueue right child if it exists
+                if (node.right) {
+                    queue.push(node.right)
+                }
+            }
+
+            // After processing the level, add the sum to result
+            result.push(levelSum);
+        }
+
+        return result;
+    }
 }
 
 // Create a node and log it to see how it works
