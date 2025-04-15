@@ -57,72 +57,87 @@ class BinaryTree {
             result.push(node.value)
         }
     }
+
+    // Insert a value
+    insert(value) {
+        this.root = this._insert(this.root, value);
+    }
     
-    insert(root, value) {
+    _insert(node, value) {
         // If tree is empty, create new node
-        if (root === null) {
+        if (node === null) {
             return new BinaryTreeNode(value);
         }
     
         // If value matches root value, increment count
-        if (value === root.value) {
-            root.count++
+        if (value === node.value) {
+            node.count++
+        } else if (value < node.value) {
+            // If value is less than root, go left 
+            node.left = this._insert(node.left, value)
+        } else {
+            root.right = this._insert(node.right, value);
         }
-    
-        // If value is less than root, go left
-        if (value < root.value) {
-            root.left = insert(root.left, value)
-        } else { // If value is greater than root, go right
-            root.right = insert(root.right, value)
-        }
-        return root
+        return node;
     }
     
-    search(root, value) {
-        if (root === null || root.value === value) {
-            return root
+    // Search for a value
+    search(value) {
+        return this._search(this.root, value);
+    }
+
+    _search(node, value) {
+        if (node === null || node.value === value) {
+            return node;
         }
-        if (value < root.value) {
-            return search(root.left, value)
+        if (value < node.value) {
+            return this._search(node.left, value)
         }
-        return search(root.right, value)
+        return this._search(node.right, value);
+    }
+
+    // Get height of the tree
+    getHeight() {
+        return this._getHeight(this.root);
     }
     
-    getHeight(root) {
+    _getHeight(node) {
         // Base case: if the node is null, height is -1
-        if (root === null) {
-            return 0
+        if (node === null) {
+            return -1; // Height of empty tree is -1 (single node has height 0)
         }
     
         // Recursively get the height of left and right subtrees
-        const leftHeight = getHeight(this.root.left)
-        const rightHeight = getHeight(root.right)
+        const leftHeight = this._getHeight(node.left);
+        const rightHeight = this._getHeight(node.right);
     
         // Return the maximum height between left and right, plus 1 for the current node
-        return Math.max(leftHeight, rightHeight) + 1
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    // Validate BST
+    isValidBST() {
+        return this._checkBST(this.root, -Infinity, Infinity);
     }
     
-    isValidBST(root) {
+    _checkBST(root) {
         // Helper function to check validity with min and max bounds
         function checkBST(node, min, max) {
             // An empty tree (null) is a valid BST
             if (node === null) {
-                return true
+                return true;
             }
     
             // Check if current node's value is within the allowed range
             if (node.value <= min || node.value >= max) {
-                return false
+                return false;
             }
     
             // Recursively check left and right subtrees
             // Left subtree: all values must be < node.value, so max becomes node.value
             // Right subtree: all values must be > node.value, so min becomes node.value
-            return checkBST(node.left, min, node.value) && checkBST(node.right, node.value, max)
+            return _checkBST(node.left, min, node.value) && _checkBST(node.right, node.value, max)
         }
-    
-        // Start with full range: -Infinity to Infinity
-        return checkBST(root, -Infinity, Infinity)
     }
 }
 
