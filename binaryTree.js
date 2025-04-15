@@ -174,6 +174,46 @@ class BinaryTree {
 
         return result;
     }
+
+    zigZagTraversal() {
+        if (!this.root) {
+            return [];
+        }
+
+        const result = [];
+        const queue = [this.root]; // Initialize queue with root
+        let leftToRight = true; // Direction flag: true for left-to-right, false for right-to-left
+
+        while (queue.length > 0) {
+            const levelSize = queue.length; // Number of nodes at current level
+            const currentLevel = []; // Array to store values at current level
+
+            // Process all nodes at the current level
+            for (let i = 0; i < levelSize; i++) {
+                const node = queue.shift(); // Dequeue the next node
+                currentLevel.push(node.value); // Add value to current level array
+
+                // Enqueue children for next level
+                if (node.left) {
+                    queue.push(node.left);
+                }
+                if (node.right) {
+                    queue.push(node.right);
+                }
+            }
+
+            // Add current level to result, reversing if right-to-left
+            if (!leftToRight) {
+                currentLevel.reverse();
+            }
+            result.push(...currentLevel); // Spread to append values individually
+
+            // Toggle direction for next level
+            leftToRight = !leftToRight;
+        }
+
+        return result;
+    }
 }
 
 // Create a node and log it to see how it works
