@@ -266,6 +266,44 @@ class Graph {
 
         return result;
     }
+
+    shortestPath(start, end) {
+        if (!this.adjacencyList.has(start) || !this.adjacencyList.has(end)) {
+            return null;
+        }
+
+        const queue = [start];
+        const visited = new Set([start]);
+        const parent = new Map(); // Track parent of each vertex
+        parent.set(start, null); // Start has no parent
+
+        // BFS to find the end vertex
+        while (queue.length > 0) {
+            const current = queue.shift();
+
+            if (current === end) {
+                // Reconstruct path from end to start using parent map
+                const path = [];
+                let node = end;
+                while (node !== null) {
+                    path.push(node);
+                    node = parent.get(node);
+                }
+                return path.reverse(); // Reverse to get path from start to end
+            }
+
+            // Explore neighbors
+            for (const neighbors of this.adjacencyList.get(current)) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    queue.push(neighbor);
+                    parent.set(neighbor, current); // Record parent of neighbor to be current
+                }
+            }
+        }
+
+        return null; // no path found
+    }
 }
 
 // Example usage:

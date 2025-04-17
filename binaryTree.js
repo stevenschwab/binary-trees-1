@@ -214,6 +214,33 @@ class BinaryTree {
 
         return result;
     }
+
+    rangeSearch(min, max) {
+        const result = [];
+        this._rangeSearchHelper(this.root, min, max, result);
+        return result;
+    }
+
+    _rangeSearchHelper(node, min, max, result) {
+        if (!node) return;
+
+        // If no value is less than min, skip left subtree
+        if (node.value < min) {
+            this._rangeSearchHelper(node.right, min, max, result);
+            return;
+        }
+
+        // If node value is greater than max, skip right subtree
+        if (node.value > max) {
+            this._rangeSearchHelper(node.left, min, max, result);
+            return;
+        }
+
+        // If node value is in range, include it and recurse both subtrees
+        this._rangeSearchHelper(node.left, min, max, result);
+        result.push(node.value);
+        this._rangeSearchHelper(node.right, min, max, result);
+    }
 }
 
 // Create a node and log it to see how it works
