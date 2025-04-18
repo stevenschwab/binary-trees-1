@@ -306,6 +306,60 @@ class Graph {
     }
 }
 
+// Given a 2D grid of 1s (land) and 0s (water), count the number of islands
+function countIslands(grid) {
+    if (!grid || grid.length === 0) return 0;
+
+    const rows = grid.length;
+    const cols = grid[0].length;
+    let islandCount = 0;
+
+    // Helper function to perform DFS and mark connected land cells
+    function dfs(row, col) {
+        // Check boundaries and if cell is water or visited
+        if (row < 0 || 
+            row >= rows || 
+            col < 0 || 
+            col >= cols || 
+            grid[row][col] === 0
+        ) {
+            return;
+        }
+
+        // Mark the current cell as visited by setting it to 0
+        grid[row][col] = 0;
+
+        // Recursively explore all 4 directions (up, down, left, right)
+        dfs(row - 1, col); // up
+        dfs(row + 1, col); // down
+        dfs(row, col - 1); // left
+        dfs(row, col + 1); // right
+    }
+
+    // Iterate through each cell in the grid
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            if (grid[row][col] === 1) {
+                // Found a new island, increment count and explore it
+                islandCount++;
+                dfs(row, col); // Mark all connected land cells
+            }
+        }
+    }
+
+    return islandCount;
+}
+
+// Example usage:
+const grid = [
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1]
+];
+
+console.log(countIslands(grid)); // Output: 3
+
 // Example usage:
 function demonstrateGraph() {
     // Directed graph
@@ -456,4 +510,4 @@ function testCycleDetection() {
     console.log("Cycle:", g4.findCycle());
 }
 
-testCycleDetection();
+// testCycleDetection();
