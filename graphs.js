@@ -304,7 +304,105 @@ class Graph {
 
         return null; // no path found
     }
+
+    isBipartite() {
+        if (!this.adjacencyList.size) return true;
+
+        const colors = new Map(); // Store colors (0 or 1) for each vertex
+        const visited = new Set(); // Track visited vertices
+        const queue = [];
+
+        // Handle potentially disconnected components
+        for (const vertex of this.adjacencyList.keys()) {
+            if (!visited.has(vertex)) {
+                // Start BFS from an unvisited vertex
+                colors.set(vertex, 0); // Color the starting vertex with 0
+                queue.push(vertex);
+                visited.add(vertex);
+
+                while (queue.length > 0) {
+                    const current = queue.shift();
+
+                    // Check all neighbors
+                    for (const neighbor of this.adjacencyList.get(current)) {
+                        if (!visited.has(neighbor)) {
+                            // Color unvisited neighbor with opposite color
+                            colors.set(neighbor, 1 - colors.get(current));
+                            visited.add(neighbor);
+                            queue.push(neighbor);
+                        } else if (colors.get(neighbor) === colors.get(current)) {
+                            // Conflict: adjacent vertices have same color
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true; // No conflicts found, graph is bipartite
+    }
+
+    findPath(start, end) {
+        // Check if start or end vertices exist
+        if (!this.adjacencyList.has(start) || !this.adjacencyList.has(end)) {
+            return null;
+        }
+
+        const stack = [start]
+        const visited = new Set();
+        const parent = new Map();
+        parent.set(start, null); // start vertex has no parent
+        visited.add(start);
+
+        // Iterative DFS
+        while (stack.length > 0) {
+            const current = stack.pop();
+
+            // If we found the end vertex, reconstruct and return the path
+            if (current === end) {
+                return this.reconstructPath(parent, start, end);
+            }
+
+            // Explore neighbors
+            for (const neighbor of this.adjacencyList.get(current)) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    stack.push(neighbor);
+                    parent.set(neighbor, current); // Record parent
+                }
+            }
+        }
+
+        // No path found
+        return null;
+    }
+
+    reconstructPath(parent, start, end) {
+        const path = [];
+        let current = end;
+
+        // Backtrack from end to start using parent map
+        while (current !== null) {
+            path.push(current);
+            current = parent.get(current);
+        }
+
+        // Reverse to get path from start to end
+        return path.reverse();
+    }
 }
+
+// Example usage:
+const graph = new Graph();
+['A', 'B', 'C', 'D', 'E'].forEach(vertex => graph.addVertex(vertex));
+graph.addEdge('A', 'B');
+graph.addEdge('B', 'C');
+graph.addEdge('C', 'D');
+graph.addEdge('D', 'E');
+graph.addEdge('A', 'E');
+
+console.log(graph.findPath('A', 'D')); // Output: ['A', 'B', 'C', 'D'] or ['A', 'E', 'D']
+console.log(graph.findPath('A', 'Z')); // Output: null
 
 // Given a 2D grid of 1s (land) and 0s (water), count the number of islands
 function countIslands(grid) {
@@ -358,7 +456,7 @@ const grid = [
     [0, 0, 0, 1, 1]
 ];
 
-console.log(countIslands(grid)); // Output: 3
+// console.log(countIslands(grid)); // Output: 3
 
 // Example usage:
 function demonstrateGraph() {
