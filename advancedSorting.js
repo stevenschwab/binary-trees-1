@@ -24,5 +24,54 @@ function partition(arr, low, high) {
 }
 
 // Example usage
+// const arr = [5, 2, 9, 1, 5, 6];
+// console.log(quicksort(arr)); // Output: [1, 2, 5, 5, 6, 9]
+
+// mergesort
+function mergeSort(arr) {
+    // base case: arrays of length 0 or 1 are sorted
+    if (arr.length <= 1) return arr;
+
+    // divide array into two halves
+    const mid = Math.floor(arr.length / 2);
+    const left = arr.slice(0, mid);
+    const right = arr.slice(mid);
+
+    // recursively sort both halves
+    return merge(mergeSort(left), mergeSort(right));
+}
+
+function merge(left, right) {
+    const result = [];
+    let i = 0; // Index for left array
+    let j = 0; // Index for right array
+    
+    // Compare and merge elements in sorted order
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+
+    // Add remaining elements from left, if any
+    while (i < left.length) {
+        result.push(left[i]);
+        i++;
+    }
+
+    // Add remaining elements from right, if any
+    while (j < right.length) {
+        result.push(right[j]);
+        j++;
+    }
+
+    return result;
+}
+
+// Example usage
 const arr = [5, 2, 9, 1, 5, 6];
-console.log(quicksort(arr)); // Output: [1, 2, 5, 5, 6, 9]
+console.log(mergeSort(arr)); // Output: [1, 2, 5, 5, 6, 9]
