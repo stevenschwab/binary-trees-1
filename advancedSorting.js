@@ -238,21 +238,192 @@ function kWayMerge(arrays) {
 }
 
 // kWayMerge Test cases
-const testCases = [
-    [
-        [1, 4, 7],
-        [2, 5, 8],
-        [3, 6, 9]
-    ],
-    [[]], // Empty array
-    [[1, 2, 3]], // Single array
-    [[], [1, 2], [3, 4]], // Some empty arrays
-    [[1, 3, 5], [2, 4, 6], [7, 8, 9], [10, 11, 12]] // Four arrays
+// const testCases = [
+//     [
+//         [1, 4, 7],
+//         [2, 5, 8],
+//         [3, 6, 9]
+//     ],
+//     [[]], // Empty array
+//     [[1, 2, 3]], // Single array
+//     [[], [1, 2], [3, 4]], // Some empty arrays
+//     [[1, 3, 5], [2, 4, 6], [7, 8, 9], [10, 11, 12]] // Four arrays
+// ];
+
+// testCases.forEach((arrays, index) => {
+//     console.log(`Test case ${index + 1}:`);
+//     console.log(`Input: ${JSON.stringify(arrays)}`);
+//     console.log(`Output: ${kWayMerge(arrays)}`);
+//     console.log();
+// });
+
+// Hybrid Sort (Quicksort + Insertion Sort) with Custom Comparator
+function kWayMergeSort(arr, k = 3, comparator = (a, b) => a - b) {
+    // MinHeap class for merging
+    class MinHeap {
+        constructor() {
+            this.heap = [];
+        }
+
+        insert(item) {
+            this.heap.push(item);
+            this.bubbleUp(this.heap.length - 1);
+        }
+
+        bubbleUp(index) {
+            while (index > 0) {
+                const parent = Math.floor((index - 1) / 2);
+                // Use comparator for heap ordering
+                if (comparator(this.heap[parent].value, this.heap[index].value) <= 0) break;
+                [this.heap[parent], this.heap[index]] = [this.heap[index], this.heap[parent]];
+                index = parent;
+            }
+        }
+
+        extractMin() {
+            if (this.heap.length === 0) return null;
+            if (this.heap.length === 1) return this.heap.pop();
+            
+            const min = this.heap[0];
+            this.heap[0] = this.heap.pop();
+            this.bubbleDown(0);
+            return min;
+        }
+
+        bubbleDown(index) {
+            const length = this.heap.length;
+            while (true) {
+                let smallest = index;
+                const left = 2 * index + 1;
+                const right = 2 * index + 2;
+
+                if (left < length && comparator(this.heap[left].value, this.heap[smallest].value) < 0) {
+                    smallest = left;
+                }
+                if (right < length && comparator(this.heap[right].value, this.heap[smallest].value) < 0) {
+                    smallest = right;
+                }
+                if (smallest === index) break;
+
+                [this.heap[index], this.heap[smallest]] = [this.heap[smallest], this.heap[index]];
+                index = smallest;
+            }
+        }
+
+        isEmpty() {
+            return this.heap.length === 0;
+        }
+    }
+
+    // Base case: if array is small, use insertion sort with comparator
+    function insertionSortSmall(arr, low, high) {
+        for (let i = low + 1; i <= high; i++) {
+            const key = arr[i];
+            let j = i - 1;
+            while (j >= low && comparator(arr[j], key) > 0) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
+    // K-way merge function for sorted subarrays
+    function mergeKArrays(arr, start, end, k) {
+        const n = end - start + 1;
+        if (n <= 10) {
+            insertionSortSmall(arr, start, end);
+            return;
+        }
+
+        // Divide into k parts
+        const partSize = Math.ceil(n / k);
+        const subarrays = [];
+
+        // Recursively sort k subarrays
+        for (let i = 0; i < k; i++) {
+            const subStart = start + i * partSize;
+            const subEnd = Math.min(subStart + partSize - 1, end);
+            if (subStart <= subEnd) {
+                kWayMergeSortRecursive(arr, subStart, subEnd, k);
+                subarrays.push({ start: subStart, end: subEnd });
+            }
+        }
+
+        // Merge k sorted subarrays using min-heap
+        const minHeap = new MinHeap();
+        const result = [];
+        const pointers = subarrays.map(sub => sub.start);
+
+        // Initialize heap with first element from each subarray
+        for (let i = 0; i < subarrays.length; i++) {
+            if (pointers[i] <= subarrays[i].end) {
+                minHeap.insert({
+                    value: arr[pointers[i]],
+                    subarrayIndex: i
+                });
+                pointers[i]++;
+            }
+        }
+
+        // Extract min and add next element from same subarray
+        while (!minHeap.isEmpty()) {
+            const { value, subarrayIndex } = minHeap.extractMin();
+            result.push(value);
+
+            if (pointers[subarrayIndex] <= subarrays[subarrayIndex].end) {
+                minHeap.insert({
+                    value: arr[pointers[subarrayIndex]],
+                    subarrayIndex
+                });
+                pointers[subarrayIndex]++;
+            }
+        }
+
+        // Copy merged result back to original array
+        for (let i = 0; i < result.length; i++) {
+            arr[start + i] = result[i];
+        }
+    }
+
+    function kWayMergeSortRecursive(arr, start, end, k) {
+        if (end - start <= 0) return;
+        mergeKArrays(arr, start, end, k);
+    }
+
+    // Handle edge cases
+    if (!arr || arr.length <= 1) return arr;
+    kWayMergeSortRecursive(arr, 0, arr.length - 1, k);
+    return arr;
+}
+
+// Test cases for custom comparator
+const people = [
+    { name: 'Alice', age: 30 },
+    { name: 'Bob', age: 25 },
+    { name: 'Charlie', age: 35 }
 ];
 
-testCases.forEach((arrays, index) => {
-    console.log(`Test case ${index + 1}:`);
-    console.log(`Input: ${JSON.stringify(arrays)}`);
-    console.log(`Output: ${kWayMerge(arrays)}`);
-    console.log();
-});
+// Test Hybrid Sort
+console.log('Hybrid Sort:');
+// Sort by age
+const peopleByAgeHybrid = [...people];
+hybridSort(peopleByAgeHybrid, (a, b) => a.age - b.age);
+console.log('Sorted by age:', peopleByAgeHybrid);
+
+// Sort by name
+const peopleByNameHybrid = [...people];
+hybridSort(peopleByNameHybrid, (a, b) => a.name.localeCompare(b.name));
+console.log('Sorted by name:', peopleByNameHybrid);
+
+// Test K-Way Merge Sort
+console.log('\nK-Way Merge Sort:');
+// Sort by age
+const peopleByAgeMerge = [...people];
+kWayMergeSort(peopleByAgeMerge, 3, (a, b) => a.age - b.age);
+console.log('Sorted by age:', peopleByAgeMerge);
+
+// Sort by name
+const peopleByNameMerge = [...people];
+kWayMergeSort(peopleByNameMerge, 3, (a, b) => a.name.localeCompare(b.name));
+console.log('Sorted by name:', peopleByNameMerge);
