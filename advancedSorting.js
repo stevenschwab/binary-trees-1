@@ -145,3 +145,114 @@ function hybridSort(arr) {
 //     console.log();
 // });
 
+function kWayMerge(arrays) {
+    // Handle edge cases
+    if (!arrays || arrays.length === 0) return [];
+    if (arrays.length === 1) return arrays[0];
+
+    // Min-heap implementation
+    class MinHeap {
+        constructor() {
+            this.heap = [];
+        }
+
+        insert(item) {
+            this.heap.push(item);
+            this.bubbleUp(this.heap.length - 1);
+        }
+
+        bubbleUp(index) {
+            while (index > 0) {
+                const parent = Math.floor((index - 1) / 2);
+                if (this.heap[parent].value <= this.heap[index].value) break;
+                [this.heap[parent], this.heap[index]] = [this.heap[index], this.heap[parent]];
+                index = parent;
+            }
+        }
+
+        extractMin() {
+            if (this.heap.length === 0) return null;
+            if (this.heap.length === 1) return this.heap.pop();
+
+            const min = this.heap[0];
+            this.heap[0] = this.heap.pop();
+            this.bubbleDown(0);
+            return min;
+        }
+
+        bubbleDown(index) {
+            const length = this.heap.length;
+            while (true) {
+                let smallest = index;
+                const left = 2 * index + 1;
+                const right = 2 * index + 2;
+
+                if (left < length && this.heap[left].value < this.heap[smallest].value) {
+                    smallest = left;
+                }
+                if (right < length && this.heap[right].value < this.heap[smallest].value) {
+                    smallest = right;
+                }
+                if (smallest === index) break;
+
+                [this.heap[index], this.heap[smallest]] = [this.heap[smallest], this.heap[index]];
+                index = smallest;
+            }
+        }
+
+        isEmpty() {
+            return this.heap.length === 0;
+        }
+    }
+
+    const result = [];
+    const minHeap = new MinHeap();
+
+    // Initialize the heap with the first element from each array
+    for (let i = 0; i < arrays.length; i++) {
+        if (arrays[i].length > 0) {
+            minHeap.insert({
+                value: arrays[i][0],
+                arrayIndex: i,
+                elementIndex: 0
+            });
+        }
+    }
+
+    // Merge arrays using the min-heap
+    while (!minHeap.isEmpty()) {
+        const { value, arrayIndex, elementIndex } = minHeap.extractMin();
+        result.push(value);
+
+        // If there are more elements in the same array, add the next one to the heap
+        if (elementIndex + 1 < arrays[arrayIndex].length) {
+            minHeap.insert({
+                value: arrays[arrayIndex][elementIndex + 1],
+                arrayIndex: arrayIndex,
+                elementIndex: elementIndex + 1
+            });
+        }
+    }
+
+    return result;
+}
+
+// kWayMerge Test cases
+const testCases = [
+    [
+        [1, 4, 7],
+        [2, 5, 8],
+        [3, 6, 9]
+    ],
+    [[]], // Empty array
+    [[1, 2, 3]], // Single array
+    [[], [1, 2], [3, 4]], // Some empty arrays
+    [[1, 3, 5], [2, 4, 6], [7, 8, 9], [10, 11, 12]] // Four arrays
+];
+
+testCases.forEach((arrays, index) => {
+    console.log(`Test case ${index + 1}:`);
+    console.log(`Input: ${JSON.stringify(arrays)}`);
+    console.log(`Output: ${kWayMerge(arrays)}`);
+    console.log();
+});
