@@ -82,4 +82,79 @@ function main() {
 }
 
 // Run example
+// main();
+
+// Exercise 2: Path with Conditions
+// Find shortest path that satisfies certain conditions (e.g., must pass through specific nodes).
+
+function findPathThroughNode(graph, start, end, mustPass) {
+    // Helper function to perform BFS and return parent map and distances
+    function bfs(start, target) {
+        const queue = [start];
+        const distances = new Map([[start, 0]]);
+        const parents = new Map([[start, null]]);
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const neighbors = graph[current] || [];
+
+            for (const neighbor of neighbors) {
+                if (!distances.has(neighbor)) {
+                    distances.set(neighbor, distances.get(current) + 1);
+                    parents.set(neighbor, current);
+                    queue.push(neighbor);
+                }
+            }
+            if (target && current === target) break;
+        }
+
+        return { parents, distances };
+    }
+
+    // Step 1: Find shortest path from start to mustPass
+    const { parents: parentsToMustPass, distances: distToMustPass } = bfs(start, mustPass);
+    
+    // If mustPass or end is unreachable, return null
+    if (!distToMustPass.has(mustPass)) return null;
+    
+    // Step 2: Find shortest path from mustPass to end
+    const { parents: parentsToEnd, distances: distToEnd } = bfs(mustPass, end);
+    
+    if (!distToEnd.has(end)) return null;
+    
+    // Step 3: Reconstruct path from start to mustPass
+    let path = [];
+    let current = mustPass;
+    while (current !== null) {
+        path.unshift(current);
+        current = parentsToMustPass.get(current);
+    }
+    
+    // Step 4: Reconstruct path from mustPass to end (excluding mustPass)
+    current = parentsToEnd.get(end);
+    while (current !== mustPass) {
+        path.push(current);
+        current = parentsToEnd.get(current);
+    }
+    path.push(end);
+    
+    return path;
+}
+
+// Example usage:
+function main() {
+    const graph = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D', 'E'],
+        'C': ['A', 'F'],
+        'D': ['B'],
+        'E': ['B', 'F'],
+        'F': ['C', 'E']
+    };
+    
+    const result = findPathThroughNode(graph, 'A', 'F', 'E');
+    console.log(result); // Output: ['A', 'B', 'E', 'F']
+}
+
+// Run example
 main();
