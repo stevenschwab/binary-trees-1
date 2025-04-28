@@ -157,4 +157,60 @@ function main() {
 }
 
 // Run example
+// main();
+
+function groupByLevels(graph, start) {
+    // Initialize result object to store nodes by level
+    const levels = {};
+    
+    // Initialize queue for BFS
+    const queue = [start];
+    
+    // Initialize distances map and visited set
+    const distances = new Map([[start, 0]]);
+    const visited = new Set([start]);
+    
+    // BFS
+    while (queue.length > 0) {
+        const current = queue.shift();
+        const currentLevel = distances.get(current);
+        
+        // Add current node to its level group
+        if (!levels[currentLevel]) {
+            levels[currentLevel] = [];
+        }
+        levels[currentLevel].push(current);
+        
+        // Process neighbors
+        const neighbors = graph[current] || [];
+        for (const neighbor of neighbors) {
+            if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                distances.set(neighbor, currentLevel + 1);
+                queue.push(neighbor);
+            }
+        }
+    }
+    
+    return levels;
+}
+
+// Example usage:
+function main() {
+    const graph = {
+        'A': ['B', 'C', 'D'],
+        'B': ['A', 'E'],
+        'C': ['A', 'F'],
+        'D': ['A', 'G'],
+        'E': ['B'],
+        'F': ['C'],
+        'G': ['D']
+    };
+    
+    const levels = groupByLevels(graph, 'A');
+    console.log(levels);
+    // Output: { 0: ['A'], 1: ['B', 'C', 'D'], 2: ['E', 'F', 'G'] }
+}
+
+// Run example
 main();
