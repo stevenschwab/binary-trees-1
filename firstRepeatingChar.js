@@ -6,11 +6,12 @@ function firstRepeatingChar(str) {
     for (let i = 0; i < str.length; i++) {
         const char = str[i]
         if (!charInfo.has(char)) {
-            charInfo.set(char, { count: 1, firstIndex: i });
+            charInfo.set(char, { count: 1, firstIndex: i, lastIndex: i });
         } else {
             const info = charInfo.get(char);
-            if (info.firstIndex === i - 1) {
+            if (info.lastIndex === i - 1) {
                 info.count++;
+                lastIndex = i;
             }
         }
     }
