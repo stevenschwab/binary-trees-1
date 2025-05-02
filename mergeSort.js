@@ -22,3 +22,7 @@ function merge(left, right) {
 
     return result.concat(left.slice(i)).concat(right.slice(j));
 }
+
+// Test cases
+const arr1 = [64, 34, 25, 12, 22, 11, 90];
+console.log('Merge sort:', mergeSort([...arr1]));

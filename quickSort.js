@@ -21,3 +21,7 @@ function partition(arr, left, right) {
     [arr[i + 1], arr[right]] = [arr[right], arr[i + 1]];
     return i + 1;
 }
+
+// Test cases
+const arr1 = [64, 34, 25, 12, 22, 11, 90];
+console.log('Quicksort:', quickSort([...arr1]));
